@@ -1,9 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../../context/ThemeContext'; // Import theme context
 import { FaHtml5, FaCss3Alt, FaJs, FaJava, FaDatabase, FaPhp, FaReact } from 'react-icons/fa';
-import { SiMongodb, SiGithub, SiTailwindcss,SiVercel,SiMysql } from 'react-icons/si';
+import { SiMongodb, SiGithub, SiTailwindcss, SiVercel, SiMysql } from 'react-icons/si';
 
 const Skills = () => {
+  const { isDarkMode } = useTheme(); // Access the theme state
+
   const skills = [
     { name: 'Node.js', icon: <SiMongodb />, level: 80 },
     { name: 'React.js', icon: <FaReact />, level: 80 },
@@ -18,32 +22,105 @@ const Skills = () => {
     { name: 'Tailwind CSS', icon: <SiTailwindcss />, level: 85 },
     { name: 'Hosting And Deployment', icon: <SiVercel />, level: 80 },
     { name: 'MySQL', icon: <SiMysql />, level: 75 },
-
-
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   return (
-    <SkillsSection id="skills">
-      <h1>My Skills</h1>
-      <SkillsContainer>
-        {skills.map((skill, index) => (
-          <SkillBar key={index}>
-            <SkillInfo>
-              <SkillIcon>{skill.icon}</SkillIcon>
-              <span>{skill.name}</span>
-            </SkillInfo>
-            <ProgressBar>
-              <Progress level={skill.level} />
-            </ProgressBar>
-          </SkillBar>
-        ))}
-      </SkillsContainer>
+    <SkillsSection isDarkMode={isDarkMode} id="skills">
+      <motion.h1
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        My Skills
+      </motion.h1>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+        <SkillsContainer>
+          <AnimatePresence>
+            {skills.map((skill, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeOut"
+                }}
+              >
+                <SkillBar
+                  as={motion.div}
+                  whileHover={{ 
+                    scale: 1.03,
+                    boxShadow: "0 8px 20px rgba(0,0,0,0.2)"
+                  }}
+                  transition={{ duration: 0.2 }}
+                  isDarkMode={isDarkMode}
+                >
+                  <SkillInfo isDarkMode={isDarkMode}>
+                    <motion.div
+                      animate={{ 
+                        y: [0, -5, 0] 
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <SkillIcon>{skill.icon}</SkillIcon>
+                    </motion.div>
+                    <span>{skill.name}</span>
+                  </SkillInfo>
+                  <ProgressBar isDarkMode={isDarkMode}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${skill.level}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      viewport={{ once: true }}
+                      style={{
+                        height: "100%",
+                        background: "var(--primary)",
+                        borderRadius: "5px"
+                      }}
+                    />
+                  </ProgressBar>
+                </SkillBar>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </SkillsContainer>
+      </motion.div>
     </SkillsSection>
   );
 };
 
 const SkillsSection = styled.section`
   padding: 5rem 10%;
+  background: ${({ isDarkMode }) => (isDarkMode ? '#1f1f1f' : '#ffffff')};
+  color: ${({ isDarkMode }) => (isDarkMode ? '#ffffff' : '#000000')};
   
   h1 {
     text-align: center;
@@ -60,10 +137,10 @@ const SkillsContainer = styled.div`
 `;
 
 const SkillBar = styled.div`
-  background: var(--secondary);
+  background: ${({ isDarkMode }) => (isDarkMode ? 'var(--secondary)' : '#f5f5f5')};
   padding: 1.5rem;
   border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
 `;
 
 const SkillInfo = styled.div`
@@ -71,6 +148,7 @@ const SkillInfo = styled.div`
   align-items: center;
   margin-bottom: 1rem;
   gap: 1rem;
+  color: ${({ isDarkMode }) => (isDarkMode ? '#ffffff' : '#000000')};
   
   span {
     font-size: 1.1rem;
@@ -84,16 +162,9 @@ const SkillIcon = styled.div`
 
 const ProgressBar = styled.div`
   height: 10px;
-  background: rgba(0,0,0,0.1);
+  background: ${({ isDarkMode }) => (isDarkMode ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.05)')};
   border-radius: 5px;
   overflow: hidden;
 `;
 
-const Progress = styled.div`
-  height: 100%;
-  background: var(--primary);
-  width: ${props => props.level}%;
-  transition: width 1s ease-in-out;
-`;
-
-export default Skills; 
+export default Skills;

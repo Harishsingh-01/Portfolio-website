@@ -13,21 +13,21 @@ const Projects = () => {
     setTimeout(() => {
       setProjects([
         {
-          title: 'Student Management System',
-          description: 'A comprehensive system built with HTML, CSS, JavaScript, PHP, and phpMyAdmin for managing student data with secure authentication.',
-          tech: ['FRONTEND', 'PHP', 'phpMyAdmin'],
-          link: '#'
+          title: 'Movie Recommened website',
+          description: 'A comprehensive system built with MERN stack for Movie Recommendation and Streaming with secure authentication.',
+          tech: ['REACT', 'NODE', 'EXPRESS', 'MONGODB'],
+          link: 'https://movie-app-client-harishsingh-01s-projects.vercel.app/'
         },
         {
-          title: 'Amazon Clone',
-          description: 'A responsive clone of Amazon\'s homepage showcasing advanced HTML and CSS skills.',
-          tech: ['HTML', 'CSS'],
-          link: '#'
+          title: 'PGify',
+          description: 'A website for PG booking with MERN stack.',
+          tech: ['REACT', 'NODE', 'EXPRESS', 'MONGODB'],
+          link: 'https://hotel-management-clientt-git-main-harishsingh-01s-projects.vercel.app/register'
         },
         {
-          title: 'Mobile App',
-          description: 'A mobile app built using Flutter with Firebase integration.',
-          tech: ['Flutter', 'Dart', 'Firebase'],
+          title: 'E-commerce website',
+          description: 'A website for E-commerce with Next.js and supabase (Under Development).',
+          tech: ['Next.js', 'supabase'],
           link: '#'
         }
       ]);

@@ -3,6 +3,12 @@ import styled from "styled-components";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import cert1 from '../../assets/Certificates/cert1.jpg';
 import cert2 from '../../assets/Certificates/cert2.jpg';
+import cert3 from '../../assets/Certificates/cert3.png';
+import cert4 from '../../assets/Certificates/cert4.png';
+import cert5 from '../../assets/Certificates/cert5.jpg';
+import cert6 from '../../assets/Certificates/cert6.jpg';
+import cert7 from '../../assets/Certificates/cert7.png';
+
 
 const Certificates = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -39,6 +45,41 @@ const Certificates = () => {
           title: "IT Team Certificate",
           description: "IT Team Certification",
           date: "2025-01-16",
+        },
+        {
+          id: 3,
+          image: cert3,
+          title: "AI-ML Certificate",
+          description: "AI-ML Certification",
+          date: "2025-01-10",
+        },
+        {
+          id: 4,
+          image: cert4,
+          title: "Cloud Quest Internship",
+          description: "Cloud Quest Internship",
+          date: "2025-01-5",
+        },
+        {
+          id: 5,
+          image: cert5,
+          title: "JAVA ITERATORS CODING CERTIFICATE",
+          description: "JAVA ITERATORS CODING CERTIFICATE",
+          date: "2024-09-11",
+        },
+        {
+          id: 6,
+          image: cert6,
+          title: "Hackvision Certificate",
+          description: "Hackvision Certificate",
+          date: "2024-11-25",
+        },
+        {
+          id: 7,
+          image: cert7,
+          title: "MongoDB Certificate",
+          description: "MongoDB Certificate",
+          date: "2025-01-27",
         }
       ];
 

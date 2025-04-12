@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    canvas {
+      background: #0ef;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="favicon" width="64" height="64"></canvas>
+  <script>
+    const canvas = document.getElementById('favicon');
+    const ctx = canvas.getContext('2d');
+    
+    // Background
+    ctx.fillStyle = '#0ef';
+    ctx.fillRect(0, 0, 64, 64);
+    
+    // Text
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 32px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('HS', 32, 32);
+    
+    // Convert to favicon
+    const link = document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = canvas.toDataURL("image/x-icon");
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+</body>
+</html> 

@@ -1,56 +1,125 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaLinkedin, FaInstagram } from 'react-icons/fa';
 import { useTheme } from '../../context/ThemeContext'; // Import theme context
 import profileImage from '../../assets/background.jpg';
+import resumePDF from '../../assets/resume.pdf'; // Make sure to add your PDF file in assets
 
 const Hero = () => {
   const { isDarkMode } = useTheme(); // Access the theme state
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Delay the animation start by 1 second
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const contentVariants = {
-    hidden: { opacity: 0, x: -50 },
+    hidden: { 
+      x: -1000,
+      opacity: 0
+    },
     visible: {
-      opacity: 1,
       x: 0,
+      opacity: 1,
       transition: {
-        duration: 0.8,
+        type: "spring",
+        damping: 12,
+        stiffness: 100,
+        bounce: 0.5,
+        duration: 1.2,
         staggerChildren: 0.2
       }
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+  const imageVariants = {
+    hidden: { 
+      x: 1000,
+      opacity: 0
+    },
     visible: {
+      x: 0,
       opacity: 1,
-      y: 0
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100,
+        bounce: 0.5,
+        duration: 1.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      x: -100,
+      opacity: 0
+    },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 10,
+        stiffness: 100,
+        bounce: 0.3,
+        duration: 1
+      }
     }
   };
 
   return (
     <HeroSection isDarkMode={isDarkMode} id="home">
-      <HeroContent>
-        <motion.div
-          variants={contentVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.h3 variants={itemVariants}>
+      <HeroContent
+        as={motion.div}
+        variants={contentVariants}
+        initial="hidden"
+        animate={isVisible ? "visible" : "hidden"}
+      >
+        <motion.div>
+          <motion.h3 
+            variants={itemVariants}
+            whileHover={{ 
+              scale: 1.05,
+              x: 10,
+              transition: { type: "spring", bounce: 0.6 }
+            }}
+          >
             Hello, It's me
           </motion.h3>
           <motion.h1
             variants={itemVariants}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            whileHover={{ 
+              scale: 1.1,
+              x: 10,
+              transition: {
+                type: "spring",
+                stiffness: 400,
+                damping: 10
+              }
+            }}
           >
             Harish Singh
           </motion.h1>
           <motion.h3 variants={itemVariants}>
             And I am a <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+              initial={{ opacity: 0, x: -5 }}
+              animate={isVisible ? { 
+                opacity: 1,
+                x: 5
+              } : { opacity: 0, x: -5 }}
+              transition={{ 
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: "reverse",
+                delay: 1
+              }}
             >
               Full Stack Developer
             </motion.span>
@@ -83,27 +152,55 @@ const Hero = () => {
               </motion.div>
             </SocialLinks>
           </motion.div>
+          <motion.div 
+            variants={itemVariants}
+            style={{ marginTop: '2rem' }}
+          >
+            <ResumeButton
+              as={motion.a}
+              href={resumePDF}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: "0 0 20px var(--primary)"
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Download Resume
+            </ResumeButton>
+          </motion.div>
         </motion.div>
       </HeroContent>
 
       <HeroImage
         as={motion.div}
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        variants={imageVariants}
+        initial="hidden"
+        animate={isVisible ? "visible" : "hidden"}
       >
         <motion.img
           src={profileImage}
           alt="profile"
-          animate={{ 
+          animate={isVisible ? { 
             y: [-20, 0, -20],
-          }}
+            scale: [1, 1.02, 1]
+          } : {}}
           transition={{ 
             duration: 4,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
+            delay: 1.2
           }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ 
+            scale: 1.1,
+            rotate: 5,
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 15
+            }
+          }}
         />
       </HeroImage>
     </HeroSection>
@@ -189,6 +286,45 @@ const HeroImage = styled.div`
     img {
       width: 60%;
     }
+  }
+`;
+
+const ResumeButton = styled.a`
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: var(--primary);
+  color: var(--background);
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    transform: rotate(45deg);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.8rem 1.5rem;
   }
 `;
 

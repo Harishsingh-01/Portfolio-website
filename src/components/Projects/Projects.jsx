@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Projects = () => {
   const { isDarkMode } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [projects, setProjects] = useState([]);
+  const sectionRef = useRef(null);
+  const projectsRef = useRef(null);
+  const titleRef = useRef(null);
 
   useEffect(() => {
-    // Simulate loading projects
     setTimeout(() => {
       setProjects([
         {
@@ -22,7 +28,7 @@ const Projects = () => {
           title: 'PGify',
           description: 'A website for PG booking with MERN stack.',
           tech: ['REACT', 'NODE', 'EXPRESS', 'MONGODB'],
-          link: 'https://hotel-management-clientt-git-main-harishsingh-01s-projects.vercel.app/register'
+          link: 'https://hotel-management-clientt-git-main-harishsingh-01s-projects.vercel.app/'
         },
         {
           title: 'E-commerce website',
@@ -34,6 +40,65 @@ const Projects = () => {
       setIsLoading(false);
     }, 1500);
   }, []);
+
+  useEffect(() => {
+    if (!sectionRef.current || !projectsRef.current || !titleRef.current || isLoading) return;
+
+    // Animate section title
+    gsap.from(titleRef.current, {
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top center",
+        toggleActions: "play none none reverse"
+      },
+      y: -50,
+      opacity: 0,
+      duration: 1
+    });
+
+    // Convert HTMLCollection to Array before using forEach
+    const projectCardsArray = Array.from(projectsRef.current.children);
+
+    // Animate project cards
+    gsap.from(projectCardsArray, {
+      scrollTrigger: {
+        trigger: projectsRef.current,
+        start: "top center+=100",
+        toggleActions: "play none none reverse"
+      },
+      y: 100,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: "power3.out"
+    });
+
+    // Add hover effects
+    projectCardsArray.forEach(card => {
+      // Create hover animation timeline
+      const hoverTl = gsap.timeline({ paused: true });
+      
+      hoverTl
+        .to(card, {
+          scale: 1.05,
+          duration: 0.3,
+          ease: "power2.out",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
+        });
+
+      // Add event listeners
+      card.addEventListener('mouseenter', () => hoverTl.play());
+      card.addEventListener('mouseleave', () => hoverTl.reverse());
+    });
+
+    // Cleanup
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      projectCardsArray.forEach(card => {
+        card.replaceWith(card.cloneNode(true));
+      });
+    };
+  }, [isLoading]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -82,22 +147,9 @@ const Projects = () => {
   }
 
   return (
-    <ProjectsSection isDarkMode={isDarkMode} id="projects">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        Projects
-      </motion.h1>
-      
-      <ProjectsGrid
-        as={motion.div}
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-      >
+    <ProjectsSection ref={sectionRef} isDarkMode={isDarkMode} id="projects">
+      <h1 ref={titleRef}>Projects</h1>
+      <ProjectsGrid ref={projectsRef}>
         <AnimatePresence>
           {projects.map((project, index) => (
             <ProjectCard
@@ -115,11 +167,7 @@ const Projects = () => {
               >
                 {project.title}
               </motion.h2>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
+              <motion.p>
                 {project.description}
               </motion.p>
               <TechStack>
@@ -143,6 +191,8 @@ const Projects = () => {
                 }}
                 whileTap={{ scale: 0.95 }}
                 href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
                 isDarkMode={isDarkMode}
               >
                 View Project

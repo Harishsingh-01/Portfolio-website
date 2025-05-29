@@ -119,6 +119,18 @@ const Certificates = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? certificates.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === certificates.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleDotClick = (index) => {
+    setCurrentIndex(index);
+  };
+
   return (
     <CertificatesSection id="certificates">
       <div className="container">
@@ -130,98 +142,78 @@ const Certificates = () => {
         >
           Certifications
         </motion.h2>
-        <SliderContainer>
-          <NavigationButton 
-            onClick={() => paginate(-1)}
-            position="left"
+        <CertificatesContainer>
+          <AnimatePresence mode="wait">
+            <AnimatedCertificate
+              key={currentIndex}
+              initial={{ opacity: 0, rotateY: 90 }}
+              animate={{ opacity: 1, rotateY: 0 }}
+              exit={{ opacity: 0, rotateY: -90 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <CertificateCard>
+                <CertificateImage onClick={() => window.open(certificates[currentIndex].image, '_blank')}>
+                  <img src={certificates[currentIndex].image} alt={certificates[currentIndex].title} />
+                  <CertificateOverlay>
+                    <CertificateLink href={certificates[currentIndex].link} target="_blank" rel="noopener noreferrer">
+                      <FaExternalLinkAlt />
+                      <span>View Certificate</span>
+                    </CertificateLink>
+                  </CertificateOverlay>
+                </CertificateImage>
+                <CertificateContent>
+                  <CertificateHeader>
+                    <CertificateIcon>
+                      <FaAward />
+                    </CertificateIcon>
+                    <CertificateTitle>{certificates[currentIndex].title}</CertificateTitle>
+                  </CertificateHeader>
+                  <CertificateInfo>
+                    <InfoItem>
+                      <FaCalendarAlt />
+                      <span>{certificates[currentIndex].date}</span>
+                    </InfoItem>
+                    <InfoItem>
+                      <FaCode />
+                      <span>{certificates[currentIndex].issuer}</span>
+                    </InfoItem>
+                  </CertificateInfo>
+                  <CertificateDescription>{certificates[currentIndex].description}</CertificateDescription>
+                  <SkillsContainer>
+                    {certificates[currentIndex].skills.map((skill, idx) => (
+                      <SkillTag key={idx}>{skill}</SkillTag>
+                    ))}
+                  </SkillsContainer>
+                </CertificateContent>
+              </CertificateCard>
+            </AnimatedCertificate>
+          </AnimatePresence>
+        </CertificatesContainer>
+        <NavigationButtons>
+          <NavButton
+            onClick={handlePrev}
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.95 }}
           >
             <FaChevronLeft />
-          </NavigationButton>
-
-          <AnimatePresence initial={false} custom={direction}>
-            <CertificateCard
-              key={currentIndex}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={1}
-              onDragEnd={(e, { offset, velocity }) => {
-                const swipe = swipePower(offset.x, velocity.x);
-                if (swipe < -swipeConfidenceThreshold) {
-                  paginate(1);
-                } else if (swipe > swipeConfidenceThreshold) {
-                  paginate(-1);
-                }
-              }}
-            >
-              <CertificateImage onClick={() => window.open(certificates[currentIndex].image, '_blank')}>
-                <img src={certificates[currentIndex].image} alt={certificates[currentIndex].title} />
-                <CertificateOverlay>
-                  <CertificateLink href={certificates[currentIndex].link} target="_blank" rel="noopener noreferrer">
-                    <FaExternalLinkAlt />
-                    <span>View Certificate</span>
-                  </CertificateLink>
-                </CertificateOverlay>
-              </CertificateImage>
-              <CertificateContent>
-                <CertificateHeader>
-                  <CertificateIcon>
-                    <FaAward />
-                  </CertificateIcon>
-                  <CertificateTitle>{certificates[currentIndex].title}</CertificateTitle>
-                </CertificateHeader>
-                <CertificateInfo>
-                  <InfoItem>
-                    <FaCalendarAlt />
-                    <span>{certificates[currentIndex].date}</span>
-                  </InfoItem>
-                  <InfoItem>
-                    <FaCode />
-                    <span>{certificates[currentIndex].issuer}</span>
-                  </InfoItem>
-                </CertificateInfo>
-                <CertificateDescription>{certificates[currentIndex].description}</CertificateDescription>
-                <SkillsContainer>
-                  {certificates[currentIndex].skills.map((skill, idx) => (
-                    <SkillTag key={idx}>{skill}</SkillTag>
-                  ))}
-                </SkillsContainer>
-              </CertificateContent>
-            </CertificateCard>
-          </AnimatePresence>
-
-          <NavigationButton 
-            onClick={() => paginate(1)}
-            position="right"
+          </NavButton>
+          <NavButton
+            onClick={handleNext}
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.95 }}
           >
             <FaChevronRight />
-          </NavigationButton>
-
-          <PaginationDots>
-            {certificates.map((_, index) => (
-              <Dot 
-                key={index}
-                active={index === currentIndex}
-                onClick={() => {
-                  setDirection(index > currentIndex ? 1 : -1);
-                  setCurrentIndex(index);
-                }}
-              />
-            ))}
-          </PaginationDots>
-        </SliderContainer>
+          </NavButton>
+        </NavigationButtons>
+        <DotsContainer>
+          {certificates.map((_, index) => (
+            <Dot
+              key={index}
+              active={index === currentIndex}
+              onClick={() => handleDotClick(index)}
+            />
+          ))}
+        </DotsContainer>
       </div>
     </CertificatesSection>
   );
@@ -232,51 +224,38 @@ const CertificatesSection = styled.section`
   background: ${props => props.theme['--light-bg']};
 `;
 
-const SliderContainer = styled.div`
+const CertificatesContainer = styled.div`
   position: relative;
-  width: 100%;
-  height: 600px;
-  margin-top: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 600px;
+  perspective: 1000px;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
-const NavigationButton = styled(motion.button)`
+const AnimatedCertificate = styled(motion.div)`
   position: absolute;
-  top: 50%;
-  ${props => props.position}: 20px;
-  transform: translateY(-50%);
-  background: ${props => props.theme['--primary']};
-  color: white;
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-
-  &:hover {
-    background: ${props => props.theme['--secondary']};
-  }
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
 `;
 
 const CertificateCard = styled(motion.div)`
-  position: absolute;
-  width: 80%;
-  max-width: 800px;
   background: ${props => props.theme['--card-bg']};
   border-radius: 15px;
   overflow: hidden;
   box-shadow: ${props => props.theme['--card-shadow']};
-  cursor: grab;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transform-origin: center;
+  will-change: transform, opacity;
+  max-width: 1000px;
+  margin: 0 auto;
 
-  &:active {
-    cursor: grabbing;
+  @media (max-width: 768px) {
+    margin-bottom: 2rem;
+    max-width: 95%;
   }
 `;
 
@@ -391,13 +370,48 @@ const SkillTag = styled.span`
   font-size: 0.8rem;
 `;
 
-const PaginationDots = styled.div`
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+const NavigationButtons = styled.div`
   display: flex;
-  gap: 10px;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  position: relative;
+  z-index: 2;
+`;
+
+const NavButton = styled(motion.button)`
+  background: ${props => props.theme['--card-bg']};
+  border: none;
+  color: ${props => props.theme['--primary']};
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: ${props => props.theme['--card-shadow']};
+
+  &:hover {
+    transform: scale(1.1);
+    background: ${props => props.theme['--primary']};
+    color: ${props => props.theme['--light-text']};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+`;
+
+const DotsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  position: relative;
   z-index: 2;
 `;
 

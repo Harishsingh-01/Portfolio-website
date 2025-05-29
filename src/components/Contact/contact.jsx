@@ -91,7 +91,7 @@ const Contact = () => {
                 </InfoIcon>
                 <InfoContent>
                   <h3>Email</h3>
-                  <p>harishsingh@gmail.com</p>
+                  <p>harishchaudhary790@gmail.com</p>
                 </InfoContent>
               </InfoCard>
             </motion.div>

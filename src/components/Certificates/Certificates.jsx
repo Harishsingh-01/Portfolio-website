@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaAward, FaExternalLinkAlt, FaCalendarAlt, FaCode, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import cert1 from '../../assets/Certificates/cert1.jpg';
 import cert2 from '../../assets/Certificates/cert2.jpg';
 import cert3 from '../../assets/Certificates/cert3.png';
@@ -9,263 +10,244 @@ import cert5 from '../../assets/Certificates/cert5.jpg';
 import cert6 from '../../assets/Certificates/cert6.jpg';
 import cert7 from '../../assets/Certificates/cert7.png';
 
-
 const Certificates = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [certificates, setCertificates] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
 
-  useEffect(() => {
-    fetchCertificates();
-  }, []);
-
-  useEffect(() => {
-    if (certificates.length === 0) return;
-
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev === certificates.length - 1 ? 0 : prev + 1));
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, [certificates]);
-
-  const fetchCertificates = async () => {
-    try {
-      const certificateData = [
-        {
-          id: 1,
-          image: cert1,
-          title: "Digital Marketing Certificate",
-          description: "Digital Marketing Certification",
-          date: "2025-03-25",
-        },
-        {
-          id: 2,
-          image: cert2,
-          title: "IT Team Certificate",
-          description: "IT Team Certification",
-          date: "2025-01-16",
-        },
-        {
-          id: 3,
-          image: cert3,
-          title: "AI-ML Certificate",
-          description: "AI-ML Certification",
-          date: "2025-01-10",
-        },
-        {
-          id: 4,
-          image: cert4,
-          title: "Cloud Quest Internship",
-          description: "Cloud Quest Internship",
-          date: "2025-01-5",
-        },
-        {
-          id: 5,
-          image: cert5,
-          title: "JAVA ITERATORS CODING CERTIFICATE",
-          description: "JAVA ITERATORS CODING CERTIFICATE",
-          date: "2024-09-11",
-        },
-        {
-          id: 6,
-          image: cert6,
-          title: "Hackvision Certificate",
-          description: "Hackvision Certificate",
-          date: "2024-11-25",
-        },
-        {
-          id: 7,
-          image: cert7,
-          title: "MongoDB Certificate",
-          description: "MongoDB Certificate",
-          date: "2025-01-27",
-        }
-      ];
-
-      // Debug logs
-      console.log("Certificate data:", certificateData);
-      
-      // Test image loading
-      certificateData.forEach(cert => {
-        console.log(`Attempting to load image: ${cert.image}`);
-        const img = new Image();
-        img.onload = () => console.log(`Successfully loaded: ${cert.image}`);
-        img.onerror = () => console.error(`Failed to load: ${cert.image}`);
-        img.src = cert.image;
-      });
-
-      setCertificates(certificateData);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error in fetchCertificates:", error);
-      setIsLoading(false);
+  const certificates = [
+    {
+      title: "Digital Marketing Certificate",
+      issuer: "Udemy",
+      date: "2025-03-25",
+      image: cert1,
+      link: "#",
+      skills: ["Digital Marketing", "SEO", "Social Media"],
+      description: "Comprehensive digital marketing certification covering modern marketing strategies and tools."
+    },
+    {
+      title: "IT Team Certificate in Mahakumbh 2025",
+      issuer: "Mahakumbh 2025",
+      date: "2025-01-16",
+      image: cert2,
+      link: "#",
+      skills: ["Team Management", "IT Operations", "Project Management"],
+      description: "Professional certification in IT team management and operations."
+    },
+    {
+      title: "AI-ML Certificate",
+      issuer: "GLA University",
+      date: "2025-01-10",
+      image: cert3,
+      link: "#",
+      skills: ["Machine Learning", "Artificial Intelligence"],
+      description: "certification in artificial intelligence and machine learning concepts."
+    },
+    {
+      title: "Cloud Quest Internship",
+      issuer: "Cloud Quest",
+      date: "2025-01-5",
+      image: cert4,
+      link: "#",
+      skills: ["React", "Node.js", "MongoDB", "Express", "Tailwind CSS"],
+      description: "Hands-on internship certification in MERN stack development."
+    },
+    {
+      title: "JAVA ITERATORS CODING CERTIFICATE",
+      issuer: "GLA University",
+      date: "2024-09-11",
+      image: cert5,
+      link: "#",
+      skills: ["Java", "Data Structures", "Algorithms"],
+      description: "Advanced Java programming certification focusing on iterators and data structures."
+    },
+    {
+      title: "Hackvision Certificate",
+      issuer: "GLA University",
+      date: "2024-11-25",
+      image: cert6,
+      link: "#",
+      skills: ["Problem Solving", "Coding", "Team Work"],
+      description: "Achievement certificate for successful participation in Hackvision hackathon."
+    },
+    {
+      title: "MongoDB Certificate",
+      issuer: "MongoDB University",
+      date: "2025-01-27",
+      image: cert7,
+      link: "#",
+      skills: ["MongoDB", "Database Design", "NoSQL"],
+      description: "Professional certification in MongoDB database management and design."
     }
+  ];
+
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
   };
 
-  const nextSlide = (e) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev === certificates.length - 1 ? 0 : prev + 1));
+  const swipeConfidenceThreshold = 10000;
+  const swipePower = (offset, velocity) => {
+    return Math.abs(offset) * velocity;
   };
 
-  const prevSlide = (e) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev === 0 ? certificates.length - 1 : prev - 1));
+  const paginate = (newDirection) => {
+    setDirection(newDirection);
+    setCurrentIndex((prevIndex) => {
+      const newIndex = prevIndex + newDirection;
+      if (newIndex < 0) return certificates.length - 1;
+      if (newIndex >= certificates.length) return 0;
+      return newIndex;
+    });
   };
 
-  const handleImageClick = (image) => {
-    window.open(image, "_blank");
-  };
-
-  if (isLoading) {
-    return <LoadingSection>Loading certificates...</LoadingSection>;
-  }
+  useEffect(() => {
+    const timer = setInterval(() => {
+      paginate(1);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <CertificatesSection id="certificates">
-      <h1>Certificates & Achievements</h1>
-      <SliderContainer>
-        <SliderButton 
-          onClick={prevSlide} 
-          position="left"
-          aria-label="Previous certificate"
+      <div className="container">
+        <motion.h2 
+          className="section-title"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
         >
-          <FaChevronLeft />
-        </SliderButton>
+          Certifications
+        </motion.h2>
+        <SliderContainer>
+          <NavigationButton 
+            onClick={() => paginate(-1)}
+            position="left"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaChevronLeft />
+          </NavigationButton>
 
-        <SliderContent>
-          {certificates.map((cert, index) => (
-            <Slide
-              key={cert.id}
-              isActive={index === currentSlide}
-              onClick={() => handleImageClick(cert.image)}
+          <AnimatePresence initial={false} custom={direction}>
+            <CertificateCard
+              key={currentIndex}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 }
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
+                if (swipe < -swipeConfidenceThreshold) {
+                  paginate(1);
+                } else if (swipe > swipeConfidenceThreshold) {
+                  paginate(-1);
+                }
+              }}
             >
-              <CertificateImage src={cert.image} alt={cert.title} />
-              <CertificateInfo>
-                <h3>{cert.title}</h3>
-                <p>{cert.description}</p>
-                <span>{cert.date}</span>
-              </CertificateInfo>
-            </Slide>
-          ))}
-        </SliderContent>
+              <CertificateImage onClick={() => window.open(certificates[currentIndex].image, '_blank')}>
+                <img src={certificates[currentIndex].image} alt={certificates[currentIndex].title} />
+                <CertificateOverlay>
+                  <CertificateLink href={certificates[currentIndex].link} target="_blank" rel="noopener noreferrer">
+                    <FaExternalLinkAlt />
+                    <span>View Certificate</span>
+                  </CertificateLink>
+                </CertificateOverlay>
+              </CertificateImage>
+              <CertificateContent>
+                <CertificateHeader>
+                  <CertificateIcon>
+                    <FaAward />
+                  </CertificateIcon>
+                  <CertificateTitle>{certificates[currentIndex].title}</CertificateTitle>
+                </CertificateHeader>
+                <CertificateInfo>
+                  <InfoItem>
+                    <FaCalendarAlt />
+                    <span>{certificates[currentIndex].date}</span>
+                  </InfoItem>
+                  <InfoItem>
+                    <FaCode />
+                    <span>{certificates[currentIndex].issuer}</span>
+                  </InfoItem>
+                </CertificateInfo>
+                <CertificateDescription>{certificates[currentIndex].description}</CertificateDescription>
+                <SkillsContainer>
+                  {certificates[currentIndex].skills.map((skill, idx) => (
+                    <SkillTag key={idx}>{skill}</SkillTag>
+                  ))}
+                </SkillsContainer>
+              </CertificateContent>
+            </CertificateCard>
+          </AnimatePresence>
 
-        <SliderButton 
-          onClick={nextSlide} 
-          position="right"
-          aria-label="Next certificate"
-        >
-          <FaChevronRight />
-        </SliderButton>
+          <NavigationButton 
+            onClick={() => paginate(1)}
+            position="right"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaChevronRight />
+          </NavigationButton>
 
-        <SliderDots>
-          {certificates.map((_, index) => (
-            <Dot 
-              key={index} 
-              active={index === currentSlide} 
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentSlide(index);
-              }} 
-            />
-          ))}
-        </SliderDots>
-      </SliderContainer>
+          <PaginationDots>
+            {certificates.map((_, index) => (
+              <Dot 
+                key={index}
+                active={index === currentIndex}
+                onClick={() => {
+                  setDirection(index > currentIndex ? 1 : -1);
+                  setCurrentIndex(index);
+                }}
+              />
+            ))}
+          </PaginationDots>
+        </SliderContainer>
+      </div>
     </CertificatesSection>
   );
 };
 
-// Updated styled components
 const CertificatesSection = styled.section`
-  padding: 5rem 10%;
-  background: var(--background);
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 3rem;
-    font-size: 2.5rem;
-    color: var(--primary);
-  }
-`;
-
-const LoadingSection = styled.div`
-  min-height: 50vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5rem;
-  color: var(--primary);
+  padding: 5rem 0;
+  background: ${props => props.theme['--light-bg']};
 `;
 
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
-  height: 550px;
-  overflow: hidden;
-  border-radius: 15px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-`;
-
-const SliderContent = styled.div`
-  height: 100%;
-  width: 100%;
-  position: relative;
-`;
-
-const Slide = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: ${(props) => (props.isActive ? 1 : 0)};
-  transition: opacity 0.5s ease-in-out;
-  cursor: pointer;
-`;
-
-const CertificateImage = styled.img`
-  width: 100%;
-  height: calc(100% - 70px);
-  object-fit: contain;
-  padding: 20px;
-`;
-
-const CertificateInfo = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 15px;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  height: 90px;
+  height: 600px;
+  margin-top: 3rem;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  h3 {
-    margin-bottom: 0.3rem;
-    color: var(--primary);
-    font-size: 1.1rem;
-  }
-
-  p {
-    font-size: 0.9rem;
-    margin-bottom: 0.3rem;
-  }
-
-  span {
-    font-size: 0.8rem;
-    color: var(--primary);
-  }
+  align-items: center;
+  justify-content: center;
 `;
 
-const SliderButton = styled.button`
+const NavigationButton = styled(motion.button)`
   position: absolute;
   top: 50%;
-  ${(props) => props.position}: 20px;
+  ${props => props.position}: 20px;
   transform: translateY(-50%);
-  background: rgba(0,0,0,0.5);
+  background: ${props => props.theme['--primary']};
   color: white;
   border: none;
   width: 40px;
@@ -275,31 +257,162 @@ const SliderButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s ease;
-  z-index: 10;
+  z-index: 2;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 
   &:hover {
-    background: var(--primary);
+    background: ${props => props.theme['--secondary']};
   }
 `;
 
-const SliderDots = styled.div`
+const CertificateCard = styled(motion.div)`
   position: absolute;
-  bottom: 120px;
+  width: 80%;
+  max-width: 800px;
+  background: ${props => props.theme['--card-bg']};
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: ${props => props.theme['--card-shadow']};
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+`;
+
+const CertificateImage = styled.div`
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  ${CertificateCard}:hover & img {
+    transform: scale(1.1);
+  }
+`;
+
+const CertificateOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  ${CertificateCard}:hover & {
+    opacity: 1;
+  }
+`;
+
+const CertificateLink = styled.a`
+  color: white;
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+`;
+
+const CertificateContent = styled.div`
+  padding: 1.5rem;
+`;
+
+const CertificateHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+`;
+
+const CertificateIcon = styled.div`
+  font-size: 1.5rem;
+  color: ${props => props.theme['--primary']};
+`;
+
+const CertificateTitle = styled.h3`
+  font-size: 1.3rem;
+  color: ${props => props.theme['--dark-text']};
+  margin: 0;
+`;
+
+const CertificateInfo = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+`;
+
+const InfoItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: ${props => props.theme['--muted']};
+  font-size: 0.9rem;
+
+  svg {
+    font-size: 1rem;
+  }
+`;
+
+const CertificateDescription = styled.p`
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: ${props => props.theme['--dark-text']};
+  margin-bottom: 1rem;
+  opacity: 0.8;
+`;
+
+const SkillsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const SkillTag = styled.span`
+  background: ${props => props.theme['--gradient']};
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+`;
+
+const PaginationDots = styled.div`
+  position: absolute;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
-  z-index: 10;
+  z-index: 2;
 `;
 
 const Dot = styled.div`
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: ${(props) => (props.active ? "var(--primary)" : "rgba(255,255,255,0.5)")};
+  background: ${props => props.active ? props.theme['--primary'] : 'rgba(0,0,0,0.2)'};
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: ${props => props.theme['--primary']};
+    transform: scale(1.2);
+  }
 `;
 
 export default Certificates;

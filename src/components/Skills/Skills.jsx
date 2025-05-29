@@ -1,27 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from '../../context/ThemeContext'; // Import theme context
-import { FaHtml5, FaCss3Alt, FaJs, FaJava, FaDatabase, FaPhp, FaReact } from 'react-icons/fa';
-import { SiMongodb, SiGithub, SiTailwindcss, SiVercel, SiMysql } from 'react-icons/si';
+import { motion } from 'framer-motion';
+import { FaReact, FaNodeJs, FaDatabase, FaGitAlt, FaDocker,FaJava  } from 'react-icons/fa';
+import { SiJavascript, SiTypescript, SiMongodb, SiExpress, SiTailwindcss, SiHtml5, SiCss3  } from 'react-icons/si';
+import { SiBisecthosting } from "react-icons/si";
 
 const Skills = () => {
-  const { isDarkMode } = useTheme(); // Access the theme state
-
   const skills = [
-    { name: 'Node.js', icon: <SiMongodb />, level: 80 },
-    { name: 'React.js', icon: <FaReact />, level: 80 },
-    { name: ' CSS3', icon: <FaCss3Alt />, level: 85 },
-    { name: 'Express.js', icon: <FaDatabase />, level: 85 },
-    { name: 'MongoDB', icon: <SiMongodb />, level: 85 },
-    { name: 'Core Java', icon: <FaJava />, level: 75 },
-    // { name: 'JavaScript', icon: <FaJs />, level: 80 },
-    { name: 'HTML5', icon: <FaHtml5 />, level: 90 },
-    { name: 'Git', icon: <SiGithub />, level: 85 },
-    { name: 'GitHub', icon: <SiGithub />, level: 85 },
-    { name: 'Tailwind CSS', icon: <SiTailwindcss />, level: 85 },
-    { name: 'Hosting And Deployment', icon: <SiVercel />, level: 80 },
-    { name: 'MySQL', icon: <SiMysql />, level: 75 },
+    { name: 'HTML', icon: <SiHtml5 />, level: 80 },
+    { name: 'CSS', icon: <SiCss3 />, level: 80 },
+    { name: 'React', icon: <FaReact />, level: 90 },
+    { name: 'JavaScript', icon: <SiJavascript />, level: 85 },
+    { name: 'TypeScript', icon: <SiTypescript />, level: 80 },
+    { name: 'Node.js', icon: <FaNodeJs />, level: 85 },
+    { name: 'Express', icon: <SiExpress />, level: 80 },
+    { name: 'MongoDB', icon: <SiMongodb />, level: 75 },
+    { name: 'SQL', icon: <FaDatabase />, level: 70 },
+    { name: 'Git', icon: <FaGitAlt />, level: 85 },
+    { name: 'Tailwind', icon: <SiTailwindcss />, level: 80 },
+    { name: 'Java', icon: <FaJava />, level: 80 },
+    { name: 'Hosting and Deployment', icon: <SiBisecthosting />, level: 80 },
+
   ];
 
   const containerVariants = {
@@ -29,7 +28,6 @@ const Skills = () => {
     visible: {
       opacity: 1,
       transition: {
-        delayChildren: 0.3,
         staggerChildren: 0.1
       }
     }
@@ -39,132 +37,113 @@ const Skills = () => {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
-      opacity: 1
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 100
+      }
     }
   };
 
   return (
-    <SkillsSection isDarkMode={isDarkMode} id="skills">
-      <motion.h1
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        My Skills
-      </motion.h1>
-
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-      >
-        <SkillsContainer>
-          <AnimatePresence>
-            {skills.map((skill, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                transition={{
-                  duration: 0.3,
-                  ease: "easeOut"
-                }}
-              >
-                <SkillBar
-                  as={motion.div}
-                  whileHover={{ 
-                    scale: 1.03,
-                    boxShadow: "0 8px 20px rgba(0,0,0,0.2)"
-                  }}
-                  transition={{ duration: 0.2 }}
-                  isDarkMode={isDarkMode}
-                >
-                  <SkillInfo isDarkMode={isDarkMode}>
-                    <motion.div
-                      animate={{ 
-                        y: [0, -5, 0] 
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <SkillIcon>{skill.icon}</SkillIcon>
-                    </motion.div>
-                    <span>{skill.name}</span>
-                  </SkillInfo>
-                  <ProgressBar isDarkMode={isDarkMode}>
-                    <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${skill.level}%` }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                      viewport={{ once: true }}
-                      style={{
-                        height: "100%",
-                        background: "var(--primary)",
-                        borderRadius: "5px"
-                      }}
-                    />
-                  </ProgressBar>
-                </SkillBar>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </SkillsContainer>
-      </motion.div>
+    <SkillsSection id="skills">
+      <div className="container">
+        <motion.h2 
+          className="section-title"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          My Skills
+        </motion.h2>
+        <SkillsGrid
+          as={motion.div}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {skills.map((skill, index) => (
+            <SkillCard
+              key={index}
+              as={motion.div}
+              variants={itemVariants}
+              whileHover={{ scale: 1.05 }}
+            >
+              <SkillIcon>{skill.icon}</SkillIcon>
+              <SkillName>{skill.name}</SkillName>
+              <ProgressBar>
+                <ProgressFill level={skill.level} />
+              </ProgressBar>
+              <SkillLevel>{skill.level}%</SkillLevel>
+            </SkillCard>
+          ))}
+        </SkillsGrid>
+      </div>
     </SkillsSection>
   );
 };
 
 const SkillsSection = styled.section`
-  padding: 5rem 10%;
-  background: ${({ isDarkMode }) => (isDarkMode ? '#1f1f1f' : '#ffffff')};
-  color: ${({ isDarkMode }) => (isDarkMode ? '#ffffff' : '#000000')};
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 3rem;
-    font-size: 2.5rem;
-    color: var(--primary);
-  }
+  padding: 5rem 0;
+  background: ${props => props.theme['--light-bg']};
 `;
 
-const SkillsContainer = styled.div`
+const SkillsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
+  margin-top: 3rem;
 `;
 
-const SkillBar = styled.div`
-  background: ${({ isDarkMode }) => (isDarkMode ? 'var(--secondary)' : '#f5f5f5')};
-  padding: 1.5rem;
-  border-radius: 10px;
+const SkillCard = styled.div`
+  background: ${props => props.theme['--card-bg']};
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: ${props => props.theme['--card-shadow']};
+  text-align: center;
   transition: all 0.3s ease;
-`;
 
-const SkillInfo = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 1rem;
-  color: ${({ isDarkMode }) => (isDarkMode ? '#ffffff' : '#000000')};
-  
-  span {
-    font-size: 1.1rem;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
   }
 `;
 
 const SkillIcon = styled.div`
-  font-size: 1.5rem;
-  color: var(--primary);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: ${props => props.theme['--primary']};
+`;
+
+const SkillName = styled.h3`
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: ${props => props.theme['--dark-text']};
 `;
 
 const ProgressBar = styled.div`
-  height: 10px;
-  background: ${({ isDarkMode }) => (isDarkMode ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.05)')};
-  border-radius: 5px;
+  width: 100%;
+  height: 8px;
+  background: ${props => props.theme['--light-bg']};
+  border-radius: 4px;
   overflow: hidden;
+  margin-bottom: 0.5rem;
+`;
+
+const ProgressFill = styled.div`
+  width: ${props => props.level}%;
+  height: 100%;
+  background: ${props => props.theme['--gradient']};
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+`;
+
+const SkillLevel = styled.span`
+  font-size: 0.9rem;
+  color: ${props => props.theme['--primary']};
+  font-weight: 600;
 `;
 
 export default Skills;

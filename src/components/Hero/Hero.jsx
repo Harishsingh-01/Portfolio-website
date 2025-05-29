@@ -1,75 +1,97 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaLinkedin, FaInstagram } from 'react-icons/fa';
-import { useTheme } from '../../context/ThemeContext'; // Import theme context
+import { FaLinkedin, FaGithub, FaTwitter, FaDownload, FaEnvelope } from 'react-icons/fa';
+import { SiLeetcode, SiHackerrank } from 'react-icons/si';
+import { useTheme } from '../../context/ThemeContext';
 import profileImage from '../../assets/background.jpg';
-import resumePDF from '../../assets/resume.pdf'; // Make sure to add your PDF file in assets
+import resumePDF from '../../assets/resume.pdf';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Sphere, MeshDistortMaterial } from '@react-three/drei';
 
 const Hero = () => {
-  const { isDarkMode } = useTheme(); // Access the theme state
+  const { isDarkMode } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
+  const [currentRole, setCurrentRole] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [text, setText] = useState('');
+  const [delta, setDelta] = useState(100);
+
+  const roles = [
+    "Full Stack Developer",
+    "Frontend Developer",
+    "Backend Developer",
+    "MERN Stack Developer",
+    "React Developer"
+  ];
 
   useEffect(() => {
-    // Delay the animation start by 1 second
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 500);
-
     return () => clearTimeout(timer);
   }, []);
 
-  const contentVariants = {
-    hidden: { 
-      x: -1000,
-      opacity: 0
-    },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100,
-        bounce: 0.5,
-        duration: 1.2,
-        staggerChildren: 0.2
-      }
+  useEffect(() => {
+    let ticker = setInterval(() => {
+      tick();
+    }, delta);
+
+    return () => { clearInterval(ticker) };
+  }, [text, delta]);
+
+  const tick = () => {
+    let i = currentRole % roles.length;
+    let fullText = roles[i];
+    let updatedText = isDeleting 
+      ? fullText.substring(0, text.length - 1)
+      : fullText.substring(0, text.length + 1);
+
+    setText(updatedText);
+
+    if (isDeleting) {
+      setDelta(50);
+    }
+
+    if (!isDeleting && updatedText === fullText) {
+      setIsDeleting(true);
+      setDelta(1000);
+    } else if (isDeleting && updatedText === '') {
+      setIsDeleting(false);
+      setCurrentRole(prevRole => prevRole + 1);
+      setDelta(100);
     }
   };
 
-  const imageVariants = {
+  const contentVariants = {
     hidden: { 
-      x: 1000,
-      opacity: 0
+      opacity: 0,
+      y: 50
     },
     visible: {
-      x: 0,
       opacity: 1,
+      y: 0,
       transition: {
         type: "spring",
         damping: 12,
         stiffness: 100,
-        bounce: 0.5,
-        duration: 1.2
+        staggerChildren: 0.2
       }
     }
   };
 
   const itemVariants = {
     hidden: { 
-      x: -100,
-      opacity: 0
+      opacity: 0,
+      y: 20
     },
     visible: {
-      x: 0,
       opacity: 1,
+      y: 0,
       transition: {
         type: "spring",
         damping: 10,
-        stiffness: 100,
-        bounce: 0.3,
-        duration: 1
+        stiffness: 100
       }
     }
   };
@@ -85,103 +107,117 @@ const Hero = () => {
         <motion.div>
           <motion.h3 
             variants={itemVariants}
-            whileHover={{ 
-              scale: 1.05,
-              x: 10,
-              transition: { type: "spring", bounce: 0.6 }
-            }}
+            className="greeting"
           >
-            Hello, It's me
+            Hello, I'm
           </motion.h3>
           <motion.h1
             variants={itemVariants}
-            whileHover={{ 
-              scale: 1.1,
-              x: 10,
-              transition: {
-                type: "spring",
-                stiffness: 400,
-                damping: 10
-              }
-            }}
+            className="name"
           >
             Harish Singh
           </motion.h1>
-          <motion.h3 variants={itemVariants}>
-            And I am a <motion.span
-              initial={{ opacity: 0, x: -5 }}
-              animate={isVisible ? { 
-                opacity: 1,
-                x: 5
-              } : { opacity: 0, x: -5 }}
-              transition={{ 
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: "reverse",
-                delay: 1
-              }}
-            >
-              Full Stack Developer
-            </motion.span>
+          <motion.h3 variants={itemVariants} className="title">
+            <TypewriterText>{text}</TypewriterText>
           </motion.h3>
           <motion.div variants={itemVariants}>
             <Description>
-              I'm a passionate Full Stack Developer with hands-on experience building dynamic and scalable applications, 
-              including a Student Management System and an Amazon clone. I've actively participated in hackathons and 
-              tech events, constantly pushing my skills to the next level. With a keen eye for innovation and 
-              problem-solving, I thrive on creating impactful digital solutions.
+              I'm a passionate Full Stack Developer crafting innovative digital solutions.
+              Specializing in building scalable applications with modern technologies.
             </Description>
           </motion.div>
           <motion.div variants={itemVariants}>
             <SocialLinks>
-              <motion.div
+              <SocialIcon
+                href="www.linkedin.com/in/harish--singh"
+                target="_blank"
                 whileHover={{ scale: 1.2, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <SocialLink href="https://www.linkedin.com/feed/" target="_blank">
-                  <FaLinkedin />
-                </SocialLink>
-              </motion.div>
-              <motion.div
+                <FaLinkedin />
+              </SocialIcon>
+              <SocialIcon
+                href="https://github.com/Harishsingh-01"
+                target="_blank"
                 whileHover={{ scale: 1.2, rotate: -5 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <SocialLink href="https://www.instagram.com/harish.chaudharyy_/" target="_blank">
-                  <FaInstagram />
-                </SocialLink>
-              </motion.div>
+                <FaGithub />
+              </SocialIcon>
+              <SocialIcon
+                href="https://x.com/Harish_x01"
+                target="_blank"
+                whileHover={{ scale: 1.2, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <FaTwitter />
+              </SocialIcon>
             </SocialLinks>
           </motion.div>
-          <motion.div 
-            variants={itemVariants}
-            style={{ marginTop: '2rem' }}
-          >
-            <ResumeButton
-              as={motion.a}
-              href={resumePDF}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ 
-                scale: 1.05,
-                boxShadow: "0 0 20px var(--primary)"
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Download Resume
-            </ResumeButton>
+          <motion.div variants={itemVariants}>
+            <ButtonGroup>
+              <ResumeButton
+                as={motion.a}
+                href={resumePDF}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 0 20px var(--primary)"
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ButtonContent>
+                  <ButtonIcon>
+                    <FaDownload />
+                  </ButtonIcon>
+                  <ButtonText>Download Resume</ButtonText>
+                </ButtonContent>
+              </ResumeButton>
+              <ContactButton
+                as={motion.a}
+                href="#contact"
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 0 20px var(--secondary)"
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ButtonContent>
+                  <ButtonIcon>
+                    <FaEnvelope />
+                  </ButtonIcon>
+                  <ButtonText>Contact Me</ButtonText>
+                </ButtonContent>
+              </ContactButton>
+            </ButtonGroup>
           </motion.div>
         </motion.div>
       </HeroContent>
 
       <HeroImage
         as={motion.div}
-        variants={imageVariants}
+        variants={contentVariants}
         initial="hidden"
         animate={isVisible ? "visible" : "hidden"}
       >
+        <Canvas>
+          <OrbitControls enableZoom={false} />
+          <ambientLight intensity={1} />
+          <directionalLight position={[2, 1, 1]} />
+          <Sphere args={[1, 100, 200]} scale={2.5}>
+            <MeshDistortMaterial
+              color={isDarkMode ? "#4a00e0" : "#8e2de2"}
+              attach="material"
+              distort={0.5}
+              speed={2}
+            />
+          </Sphere>
+        </Canvas>
         <motion.img
           src={profileImage}
           alt="profile"
+          className="profile-image"
           animate={isVisible ? { 
             y: [-20, 0, -20],
             scale: [1, 1.02, 1]
@@ -189,17 +225,7 @@ const Hero = () => {
           transition={{ 
             duration: 4,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1.2
-          }}
-          whileHover={{ 
-            scale: 1.1,
-            rotate: 5,
-            transition: {
-              type: "spring",
-              stiffness: 300,
-              damping: 15
-            }
+            ease: "easeInOut"
           }}
         />
       </HeroImage>
@@ -213,118 +239,251 @@ const HeroSection = styled.section`
   align-items: center;
   justify-content: space-between;
   padding: 0 10%;
-  background: ${({ isDarkMode }) => (isDarkMode ? '#1f1f1f' : '#ffffff')};
-  color: ${({ isDarkMode }) => (isDarkMode ? 'white' : 'black')};
-  gap: 2rem;
-  
+  position: relative;
+  overflow: hidden;
+  background: ${props => props.isDarkMode ? 'var(--dark-bg)' : 'var(--light-bg)'};
+  color: ${props => props.isDarkMode ? 'var(--light-text)' : 'var(--dark-text)'};
+
   @media (max-width: 768px) {
     flex-direction: column;
-    padding-top: 5rem;
+    padding: 2rem;
     text-align: center;
   }
 `;
 
 const HeroContent = styled.div`
   flex: 1;
-  max-width: 50%;
-  
-  h1 {
-    font-size: 3.5rem;
-    margin: 1rem 0;
-  }
-  
-  h3 {
+  z-index: 1;
+
+  .greeting {
     font-size: 1.5rem;
+    color: ${props => props.theme['--primary']};
+    margin-bottom: 1rem;
+  }
+
+  .name {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: ${props => props.theme['--dark-text']};
+    background: linear-gradient(45deg, 
+      ${props => props.theme['--primary']}, 
+      ${props => props.theme['--secondary']}
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
     
-    span {
-      color: #0ef;
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(45deg, 
+        ${props => props.theme['--primary']}, 
+        ${props => props.theme['--secondary']}
+      );
+      border-radius: 2px;
     }
   }
 
-  @media (max-width: 768px) {
-    max-width: 100%;
+  .title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: ${props => props.theme['--dark-text']};
   }
 `;
 
 const Description = styled.p`
-  margin: 1rem 0;
+  font-size: 1.1rem;
   line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  color: ${props => props.theme['--dark-text']};
 `;
 
 const SocialLinks = styled.div`
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  
-  @media (max-width: 768px) {
-    justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+`;
+
+const SocialIcon = styled(motion.a)`
+  font-size: 1.5rem;
+  color: var(--primary);
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--secondary);
   }
 `;
 
-const SocialLink = styled.a`
-  color: #0ef;
-  font-size: 1.5rem;
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
+const ButtonContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+const ButtonIcon = styled.span`
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+`;
+
+const ButtonText = styled.span`
+  font-weight: 600;
+`;
+
+const ResumeButton = styled(motion.a)`
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  background: ${props => props.theme['--gradient']};
+  color: ${props => props.theme['--light-text']};
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      45deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  &:hover::before {
+    transform: translateX(100%);
+  }
+`;
+
+const ContactButton = styled(motion.a)`
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  background: transparent;
+  color: ${props => props.theme['--primary']};
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid ${props => props.theme['--primary']};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: ${props => props.theme['--primary']};
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.6s ease;
+    z-index: -1;
+  }
+
+  &:hover {
+    color: ${props => props.theme['--light-text']};
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 `;
 
 const HeroImage = styled.div`
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  img {
-    width: 70%;
-    height: auto;
+  position: relative;
+  height: 500px;
+  width: 500px;
+
+  @media (max-width: 768px) {
+    height: 300px;
+    width: 300px;
+    margin-top: 2rem;
+  }
+
+  .profile-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
     object-fit: cover;
-  }
-  
-  @media (max-width: 768px) {
-    margin-top: 2rem;
-    width: 100%;
-    
-    img {
-      width: 60%;
+    border: 4px solid var(--primary);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      width: 200px;
+      height: 200px;
     }
   }
 `;
 
-const ResumeButton = styled.a`
+const TypewriterText = styled.span`
   display: inline-block;
-  padding: 1rem 2rem;
-  background: var(--primary);
-  color: var(--background);
-  text-decoration: none;
-  border-radius: 30px;
-  font-weight: 600;
   position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  
-  &::before {
-    content: '';
+  color: var(--secondary);
+  transition: all 0.1s ease;
+
+  &::after {
+    content: '|';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-      45deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent
-    );
-    transform: rotate(45deg);
-    animation: shimmer 2s infinite;
+    right: -5px;
+    animation: blink 0.7s infinite;
   }
 
-  @keyframes shimmer {
-    0% { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) rotate(45deg); }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }
+`;
 
-  @media (max-width: 768px) {
-    padding: 0.8rem 1.5rem;
+const TypewriterCursor = styled.span`
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: ${props => props.theme['--primary']};
+  margin-left: 0.1rem;
+  animation: blink 1s infinite;
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }
 `;
 

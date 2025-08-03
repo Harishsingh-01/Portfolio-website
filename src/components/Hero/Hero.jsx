@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaLinkedin, FaGithub, FaTwitter, FaDownload, FaEnvelope } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaTwitter, FaFile , FaEnvelope } from 'react-icons/fa';
 import { SiLeetcode, SiHackerrank } from 'react-icons/si';
 import { useTheme } from '../../context/ThemeContext';
 import profileImage from '../../assets/background.jpg';
@@ -169,9 +169,9 @@ const Hero = () => {
               >
                 <ButtonContent>
                   <ButtonIcon>
-                    <FaDownload />
+                    <FaFile />
                   </ButtonIcon>
-                  <ButtonText>Download Resume</ButtonText>
+                  <ButtonText>Resume</ButtonText>
                 </ButtonContent>
               </ResumeButton>
               <ContactButton

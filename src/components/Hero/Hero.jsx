@@ -171,7 +171,7 @@ const Hero = () => {
                   <ButtonIcon>
                     <FaFile />
                   </ButtonIcon>
-                  <ButtonText>Resume</ButtonText>
+                  <ButtonText>My Resume</ButtonText>
                 </ButtonContent>
               </ResumeButton>
               <ContactButton
